@@ -1,0 +1,60 @@
+---
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Removing default configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Make host in /var/.. directory
+      file:
+        path: /var/www/{{ item.name }}/html
+        state: directory
+      with_items:
+        - "{{ nginx_vhosts }}"
+
+    - name: Adding index.html
+      template:
+        src: index.html.j2
+        dest: /var/www/{{ item.name }}/html/index.html
+      with_items:
+        - "{{ nginx_vhosts }}"
+
+    - name: Adding nginx configuration
+      template:
+        src: "r89179174234.devops.rebrain.srwx.net.j2"
+        dest: /etc/nginx/sites-available/{{ item.name }}
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - "{{ nginx_vhosts }}"
+      notify: reload nginx
+
+    - name: Create symlink 
+      file:
+        src: /etc/nginx/sites-available/{{ item.name }}
+        dest: /etc/nginx/sites-enabled/{{ item.name }}
+        state: link
+        force: yes
+      with_items:
+        - "{{ nginx_vhosts }}"
+      notify: reload nginx
+
+    - name: Update nginx.conf file
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        backup: yes
+      notify: reload nginx
+
+    - name: Update hosts file
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+        backup: yes
+      notify: reload nginx

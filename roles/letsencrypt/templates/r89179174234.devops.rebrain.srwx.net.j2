@@ -1,0 +1,16 @@
+server {
+        listen 80;
+        listen [::]:80;
+
+        root /var/www/r89179174234.devops.rebrain.srwx.net/html;   
+
+        server_name {{ item.name }};
+        access_log /var/log/nginx/r89179174234.devops.rebrain.srwx.net.log;
+        error_log /var/log/nginx/r89179174234.devops.rebrain.srwx.net.log;
+ 
+        index index.html index.htm index.nginx-debian.html;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}

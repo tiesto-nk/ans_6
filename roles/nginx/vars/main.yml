@@ -1,0 +1,6 @@
+---
+nginx_vhosts:
+  - name: r89179174234.devops.rebrain.srwx.net
+
+
+server_names_hash_bucket_size: 128
